@@ -6,6 +6,7 @@ public class MyFirstScript : MonoBehaviour
     void Start()
     {
         print("Hello World");
+        print("anything");
     }
 
     // Update is called once per frame
