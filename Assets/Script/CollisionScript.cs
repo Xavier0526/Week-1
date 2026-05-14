@@ -1,19 +1,61 @@
 using UnityEngine;
 
-public class PlayerCollect : MonoBehaviour
+public class PlayerScript : MonoBehaviour
 {
-    public int gameObjects = 0;
-    public int totalgameObject = 3;
+    GameObject currentCollectible;
+    int collCount = 0;
 
-    private void OnTriggerEnter(Collider other)
+    void OnCollisionEnter(Collision collision)
     {
-        if (other.CompareTag("Player"))
+        if(collision.gameObject.tag == "Collectible")
         {
-            gameObjects++;
-            Debug.Log("Collected! Total: " + gameObjects);
+            currentCollectible = collision.gameObject;
+        }
+    }
+    void OnCollisionExit(Collision collision)
+    {
+        if(collision.gameObject == currentCollectible)
+        {
+            currentCollectible = null;
+        }
+    }
 
-            Destroy(gameObject);
+    void OnInteract()
+    {
+        if(currentCollectible != null)
+        {
+            CollectibleScript collectible = currentCollectible.GetComponent<CollectibleScript>();
+
+            collCount++;
+            
+            print("Player has collected " + collCount + " collectibles");
+            
+            Destroy(currentCollectible);
+        }
+    }
+
+    void OnTriggerEnter(Collider other)
+    {
+        if (other.gameObject.tag == "GoalArea" && collCount >= 3)
+        {
+            print("Player entered trigger zone with " + collCount + " collectibles");
         }
 
+        if (other.CompareTag("Collectible"))
+        {
+            currentCollectible = other.gameObject;
+
+            CollectibleScript collectible =
+                currentCollectible.GetComponent<CollectibleScript>();
+
+            if (collectible != null)
+            {
+                collCount += collectible.CollectibleScore;
+                Debug.Log("Score: " + collCount);
+            }
+
+            Destroy(currentCollectible);
+        }
     }
+
 }
